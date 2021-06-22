@@ -9,39 +9,32 @@ import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
+import androidx.paging.PagingData
 import com.cloudinteractive.githubuserdemo.R
 import com.cloudinteractive.githubuserdemo.databinding.FragmentUserListBinding
+import com.cloudinteractive.githubuserdemo.model.user.GetUserListResp
 import com.cloudinteractive.githubuserdemo.repository.UserRepository
 import com.cloudinteractive.githubuserdemo.viewBinding
 import kotlinx.coroutines.ObsoleteCoroutinesApi
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
-class UserListFragment : Fragment(R.layout.fragment_user_list) {
-
+class UserListFragment : Fragment(R.layout.fragment_user_list), UserListContract.View {
 
     private val binding: FragmentUserListBinding by viewBinding(FragmentUserListBinding::bind)
+    private val presenter: UserListContract.Presenter by lazy { UserListPresenter(this) }
+    @ObsoleteCoroutinesApi
+    private lateinit var epoxyController: UserListEpoxyController
 
-    private val flow = Pager(
-        PagingConfig(
-            pageSize = 20,
-            prefetchDistance = 1,
-            enablePlaceholders = false,
-        )
-    ) {
-        UserPagingSource(UserRepository())
-    }.flow
 
     @ObsoleteCoroutinesApi
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        val epoxyController = UserListEpoxyController(this::onUserItemClick)
+        epoxyController = UserListEpoxyController(this::onUserItemClick)
 
         lifecycleScope.launch {
-            flow.collectLatest {
-                epoxyController.submitData(it)
-            }
+            presenter.initPager()
         }
 
         epoxyController.addLoadStateListener { loadStates ->
@@ -54,5 +47,12 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     private fun onUserItemClick(login: String) {
         val action = UserListFragmentDirections.actionUserListFragmentToUserDetailFragment(login)
         findNavController().navigate(action)
+    }
+
+    @ObsoleteCoroutinesApi
+    override suspend fun updatePageList(pagingData: PagingData<GetUserListResp.RespUserListItem>) {
+        lifecycleScope.launch {
+            epoxyController.submitData(pagingData)
+        }
     }
 }
