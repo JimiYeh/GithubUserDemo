@@ -10,6 +10,8 @@ import java.lang.RuntimeException
 class UserPagingSource(private val repository: UserRepository) :
     PagingSource<Int, GetUserListResp.RespUserListItem>() {
 
+    private val maxLength = 100
+    private val userList: MutableList<GetUserListResp.RespUserListItem> = mutableListOf()
 
     override fun getRefreshKey(state: PagingState<Int, GetUserListResp.RespUserListItem>): Int? {
         return null
@@ -30,10 +32,13 @@ class UserPagingSource(private val repository: UserRepository) :
                         nextKey = null
                     )
                 } else {
+
+                    userList.addAll(resp.data)
+
                     return LoadResult.Page(
                         data = resp.data,
                         prevKey = null,
-                        nextKey = resp.data[resp.data.size-1].id
+                        nextKey = if (userList.size < maxLength) resp.data[resp.data.size - 1].id else null
                     )
                 }
             }

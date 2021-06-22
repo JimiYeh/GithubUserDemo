@@ -7,6 +7,7 @@ import com.airbnb.epoxy.paging3.PagingDataEpoxyController
 import com.bumptech.glide.Glide
 import com.cloudinteractive.githubuserdemo.R
 import com.cloudinteractive.githubuserdemo.databinding.ItemUserListBinding
+import com.cloudinteractive.githubuserdemo.databinding.ItemUserListHeaderBinding
 import com.cloudinteractive.githubuserdemo.epoxy.ViewBindingKotlinModel
 import com.cloudinteractive.githubuserdemo.model.user.GetUserListResp
 import kotlinx.coroutines.ObsoleteCoroutinesApi
@@ -23,9 +24,10 @@ class UserListEpoxyController(private val onItemClick : (String) -> Unit) : Pagi
         ).id(item.id)
     }
 
-//    override fun addModels(models: List<EpoxyModel<*>>) {
-//        super.addModels(models)
-//    }
+    override fun addModels(models: List<EpoxyModel<*>>) {
+        add(UserListHeaderEpoxyModel().id("header"))
+        super.addModels(models)
+    }
 
 
     class UserListItemEpoxyModel(
@@ -37,9 +39,15 @@ class UserListEpoxyController(private val onItemClick : (String) -> Unit) : Pagi
             tvLogin.text = user.login
             Glide.with(ivAvatar)
                 .load(user.avatarUrl)
+                .circleCrop()
                 .into(ivAvatar)
 
             tvSiteAdmin.visibility = if (user.siteAdmin) VISIBLE else GONE
+        }
+    }
+
+    class UserListHeaderEpoxyModel() : ViewBindingKotlinModel<ItemUserListHeaderBinding>(R.layout.item_user_list_header) {
+        override fun ItemUserListHeaderBinding.bind() {
         }
     }
 }

@@ -2,8 +2,10 @@ package com.cloudinteractive.githubuserdemo.ui.listPage
 
 import android.os.Bundle
 import android.view.View
+import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
 import com.cloudinteractive.githubuserdemo.R
@@ -22,8 +24,8 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     val flow = Pager(
         PagingConfig(
             pageSize = 20,
-            prefetchDistance = 2,
-            enablePlaceholders = false
+            prefetchDistance = 1,
+            enablePlaceholders = false,
         )
     ) {
         UserPagingSource(UserRepository())
@@ -39,6 +41,10 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
             flow.collectLatest {
                 epoxyController.submitData(it)
             }
+        }
+
+        epoxyController.addLoadStateListener { loadStates ->
+            binding.pbLoading.isVisible = loadStates.refresh is LoadState.Loading
         }
 
         binding.ervUserList.setController(epoxyController)
