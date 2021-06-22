@@ -5,6 +5,7 @@ import android.view.View
 import androidx.core.view.isVisible
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
 import androidx.paging.Pager
 import androidx.paging.PagingConfig
@@ -21,7 +22,7 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
 
     private val binding: FragmentUserListBinding by viewBinding(FragmentUserListBinding::bind)
 
-    val flow = Pager(
+    private val flow = Pager(
         PagingConfig(
             pageSize = 20,
             prefetchDistance = 1,
@@ -51,6 +52,7 @@ class UserListFragment : Fragment(R.layout.fragment_user_list) {
     }
 
     private fun onUserItemClick(login: String) {
-
+        val action = UserListFragmentDirections.actionUserListFragmentToUserDetailFragment(login)
+        findNavController().navigate(action)
     }
 }

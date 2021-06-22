@@ -43,10 +43,14 @@ class UserListEpoxyController(private val onItemClick : (String) -> Unit) : Pagi
                 .into(ivAvatar)
 
             tvSiteAdmin.visibility = if (user.siteAdmin) VISIBLE else GONE
+
+            clUser.setOnClickListener {
+                onClick(user.login)
+            }
         }
     }
 
-    class UserListHeaderEpoxyModel() : ViewBindingKotlinModel<ItemUserListHeaderBinding>(R.layout.item_user_list_header) {
+    class UserListHeaderEpoxyModel : ViewBindingKotlinModel<ItemUserListHeaderBinding>(R.layout.item_user_list_header) {
         override fun ItemUserListHeaderBinding.bind() {
         }
     }

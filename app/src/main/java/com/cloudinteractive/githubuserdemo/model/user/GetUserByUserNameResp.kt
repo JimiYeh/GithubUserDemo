@@ -7,7 +7,7 @@ data class GetUserByUserNameResp(
     @SerializedName("avatar_url")
     val avatarUrl: String = "",
     @SerializedName("bio")
-    val bio: Any = Any(),
+    val bio: String = "",
     @SerializedName("blog")
     val blog: String = "",
     @SerializedName("company")
